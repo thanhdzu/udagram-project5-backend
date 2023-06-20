@@ -9,6 +9,7 @@ jobs:
        - checkout
        - aws-cli/setup
        - serverless/setup
+       - run: npm i
        - run: serverless deploy 
 workflows:
   app_deploy:
