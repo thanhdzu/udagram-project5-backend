@@ -1,7 +1,7 @@
 org: thanhtt9900
 app: serverless-todo-app
 service: serverless-todo-app
-# frameworkVersion: '3'
+frameworkVersion: '3'
 
 custom:
   webpack:
