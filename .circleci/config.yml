@@ -1,4 +1,6 @@
 version: 2.1
+docker:
+      - image: cimg/node:14.21.3
 orbs:
    aws-cli: circleci/aws-cli@4.0.0
    serverless: circleci/serverless-framework@2.0.1
@@ -6,6 +8,7 @@ jobs:
    deploy:
      executor: serverless/default
      steps:
+       - run: node --version
        - checkout
        - aws-cli/setup
         # run Install
