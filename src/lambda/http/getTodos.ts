@@ -19,6 +19,7 @@ export const handler = middy(
     let limit // Maximum number of elements to return
 
       try {
+        logger.info('This is queryStringParameters: ', event.queryStringParameters)
         // Parse query parameters
         nextKey = parseNextKeyParameter(event)
         limit = parseLimitParameter(event) || 20
