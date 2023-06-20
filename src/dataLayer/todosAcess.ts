@@ -1,7 +1,7 @@
 import * as AWS from 'aws-sdk'
-import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+import { DocumentClient, Key  } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
-import { TodoItem } from '../models/TodoItem'
+import { TodoItem, PageableTodoItems  } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate'
 const AWSXRay = require('aws-xray-sdk')
 const XAWS = AWSXRay.captureAWS(AWS)
@@ -14,12 +14,13 @@ export class TodosAccess {
     private readonly todosTable = process.env.TODOS_TABLE,
     private readonly userIdIndex = process.env.USER_ID_INDEX,
     private readonly bucketName = process.env.ATTACHMENT_S3_BUCKET,
+    private readonly s3: AWS.S3 = new XAWS.S3({ signatureVersion: 'v4' }),
     private readonly urlExpiration = Number(
       process.env?.SIGNED_URL_EXPIRATION || 400
     )
   ) {}
 
-  async getAllTodos(userId: string): Promise<TodoItem[]> {
+  async getAllTodos(userId: string, nextKey: Key, limit: number): Promise<PageableTodoItems> {
     logger.info('Getting all todo items')
     const result = await this.docClient
       .query({
@@ -28,11 +29,14 @@ export class TodosAccess {
         KeyConditionExpression: 'userId = :userId',
         ExpressionAttributeValues: {
           ':userId': userId
-        }
+        },
+        Limit: limit,
+        ExclusiveStartKey: nextKey
       })
       .promise()
-    const items = result.Items
-    return items as TodoItem[]
+    const items = result.Items as TodoItem[]
+
+    return { todoItems: items, lastEvaluatedKey: result.LastEvaluatedKey }
   }
 
   async createTodo(todoItem: TodoItem): Promise<TodoItem> {
@@ -108,11 +112,9 @@ export class TodosAccess {
 
   async generateUploadUrl(todoId: string): Promise<string> {
     logger.info('Generating an upload url')
-    const s3 = new XAWS.S3({
-      signatureVersion: 'v4'
-    })
+
     console.log(`generateUploadUrl with todoId=${todoId}, urlExpiration=${this.urlExpiration}, bucketName=${this.bucketName}`)
-    return s3.getSignedUrl('putObject', {
+    return this.s3.getSignedUrl('putObject', {
       Bucket: this.bucketName,
       Key: todoId,
       Expires: this.urlExpiration
@@ -134,4 +136,16 @@ export class TodosAccess {
     const items = result.Items
     return items as TodoItem[]
   }
+
+  async deleteAttachment(todoId: string)  {
+    const params = {
+      Bucket: this.bucketName,
+      Key: todoId,
+    };        
+    //let is = await this.s3.headObject(params).promise();
+    await this.s3.deleteObject({
+        Bucket: this.bucketName,
+        Key: todoId
+    }).promise()
+}
 }

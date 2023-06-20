@@ -1,3 +1,5 @@
+import { Key } from "aws-sdk/clients/dynamodb";
+
 export interface TodoItem {
   userId: string
   todoId: string
@@ -6,4 +8,9 @@ export interface TodoItem {
   dueDate: string
   done: boolean
   attachmentUrl?: string
+}
+
+export interface PageableTodoItems {
+  todoItems: TodoItem[]
+  lastEvaluatedKey: Key
 }
