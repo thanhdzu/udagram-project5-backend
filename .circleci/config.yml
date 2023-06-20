@@ -8,14 +8,20 @@ jobs:
      steps:
        - checkout
        - aws-cli/setup
-       - serverless/setup
         # run Install
-       - run: 
-           name: sls plugin install
-           command: serverless plugin install -n serverless-webpack
+       - run:
+          name: Install Serverless CLI and dependencies
+          command: |
+            sudo npm i -g serverless
+            npm install
+       - run:
+          name: Verify AWS credentials
+          command: aws sts get-caller-identity
        # run deploy
        - run: serverless deploy --verbose
 workflows:
   app_deploy:
     jobs:
-      - deploy
+      - deploy:
+          context:
+            - "serverless-context"
