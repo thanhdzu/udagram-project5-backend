@@ -136,16 +136,4 @@ export class TodosAccess {
     const items = result.Items
     return items as TodoItem[]
   }
-
-  async deleteAttachment(todoId: string)  {
-    const params = {
-      Bucket: this.bucketName,
-      Key: todoId,
-    };        
-    //let is = await this.s3.headObject(params).promise();
-    await this.s3.deleteObject({
-        Bucket: this.bucketName,
-        Key: todoId
-    }).promise()
-}
 }
