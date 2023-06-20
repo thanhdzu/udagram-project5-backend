@@ -9,6 +9,10 @@ jobs:
        - checkout
        - aws-cli/setup
        - serverless/setup
+        # run Install
+       - run: 
+           name: sls plugin install
+           command: serverless plugin install -n serverless-webpack
        # run deploy
        - run: serverless deploy --verbose
 workflows:
