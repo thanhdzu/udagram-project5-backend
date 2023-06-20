@@ -1,11 +1,11 @@
 import { TodosAccess } from '../dataLayer/todosAcess'
-import { TodoItem } from '../models/TodoItem'
+import { TodoItem, PageableTodoItems } from '../models/TodoItem'
 import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 import { TodoUpdate } from '../models/TodoUpdate'
-
+import {  Key  } from 'aws-sdk/clients/dynamodb'
 const todoAccess = new TodosAccess()
-export async function getAllTodos(userId: string): Promise<TodoItem[]> {
-  return await todoAccess.getAllTodos(userId)
+export async function getAllTodos(userId: string, nextKey: Key, limit: number): Promise<PageableTodoItems> {
+  return await todoAccess.getAllTodos(userId, nextKey, limit)
 }
 
 export async function createTodo(
