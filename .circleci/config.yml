@@ -13,6 +13,7 @@ jobs:
           name: Install Serverless CLI and dependencies
           command: |
             sudo npm i -g serverless
+            npm update
             npm install
        - run:
           name: Verify AWS credentials
