@@ -1,7 +1,7 @@
 version: 2.1
 orbs:
-   aws-cli: circleci/aws-cli@3.0
-   serverless: circleci/serverless-framework@3.0
+   aws-cli: circleci/aws-cli@4.0.0
+   serverless: circleci/serverless-framework@2.0.1
 jobs:
    deploy:
      executor: serverless/default
