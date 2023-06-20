@@ -8,6 +8,7 @@ jobs:
      steps:
        - checkout
        - aws-cli/setup
+       - serverless/setup
         # run Install
        - run: 
            name: sls plugin install
