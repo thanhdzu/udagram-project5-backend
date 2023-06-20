@@ -22,6 +22,9 @@ export const handler = middy(
         // Parse query parameters
         nextKey = parseNextKeyParameter(event)
         limit = parseLimitParameter(event) || 20
+
+        logger.info('This is nextKey: ', nextKey)
+        logger.info('This is limit: ', limit)
       } catch (e) {
         logger.error('Failed to parse query parameters: ', e.message)
         return {
