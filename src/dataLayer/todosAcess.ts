@@ -22,20 +22,19 @@ export class TodosAccess {
 
   async getAllTodos(userId: string, nextKey: Key, limit: number): Promise<PageableTodoItems> {
     logger.info('Getting all todo items')
-    const result = await this.docClient
-      .query({
-        TableName: this.todosTable,
-        IndexName: this.userIdIndex,
-        KeyConditionExpression: 'userId = :userId',
-        ExpressionAttributeValues: {
-          ':userId': userId
-        },
-        Limit: limit,
-        ExclusiveStartKey: nextKey
-      })
-      .promise()
-    const items = result.Items as TodoItem[]
+    const result = await this.docClient.query({
+      TableName: this.todosTable,
+      IndexName: this.userIdIndex,
+      KeyConditionExpression: 'userId = :userId',
+      ExpressionAttributeValues: {
+        ':userId': userId
+      },
+      ScanIndexForward: false,
+      Limit: limit,
+      ExclusiveStartKey: nextKey
+    }).promise()
 
+    const items = result.Items as TodoItem[]
     return { todoItems: items, lastEvaluatedKey: result.LastEvaluatedKey }
   }
 
