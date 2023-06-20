@@ -14,3 +14,41 @@ export function getUserId(event: APIGatewayProxyEvent): string {
 
   return parseUserId(jwtToken)
 }
+
+function getQueryParameter(event, name) {
+  const queryParams = event.queryStringParameters
+  if (!queryParams) {
+    return undefined
+  }
+
+  return queryParams[name]
+}
+
+
+export function parseLimitParameter(event) {
+  const limitStr = getQueryParameter(event, 'limit')
+  if (!limitStr) {
+    return undefined
+  }
+
+  const limit = parseInt(limitStr, 10)
+  if (limit <= 0) {
+    throw new Error('Limit should be positive')
+  }
+
+  return limit
+}
+
+export  function parseNextKeyParameter(event) {
+  const nextKeyStr = getQueryParameter(event, 'nextKey')
+  if (!nextKeyStr) {
+    return undefined
+  }
+}
+
+export function encodeNextKey(lastEvaluatedKey) {
+  if (!lastEvaluatedKey) {
+    return null
+  }
+  return encodeURIComponent(JSON.stringify(lastEvaluatedKey))
+}
