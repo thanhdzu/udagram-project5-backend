@@ -5,7 +5,7 @@ import * as middy from 'middy'
 import { cors } from 'middy/middlewares'
 
 import { getAllTodos } from '../../businessLogic/todos'
-import { getUserId, parseLimitParameter, parseNextKeyParameter, encodeNextKey } from '../utils'
+import { getUserId, encodeNextKey } from '../utils'
 
 import { createLogger } from '../../utils/logger'
 const logger = createLogger('createTodo')
@@ -19,13 +19,23 @@ export const handler = middy(
     let limit // Maximum number of elements to return
 
       try {
-        logger.info('This is queryStringParameters: ', event.queryStringParameters)
-        // Parse query parameters
-        nextKey = parseNextKeyParameter(event)
-        limit = parseLimitParameter(event) || 20
+        logger.info(`This is queryStringParameters: ${event.queryStringParameters}`)
 
-        logger.info('This is nextKey: ', nextKey)
-        logger.info('This is limit: ', limit)
+        if(event.queryStringParameters.nextKey){
+          logger.info(`This is raw nextKey: ${event.queryStringParameters.nextKey}`)
+          nextKey = JSON.parse(event.queryStringParameters.nextKey);
+        }
+        if(event.queryStringParameters.limit){
+          logger.info(`This is raw limit: ${event.queryStringParameters.limit}`)
+          limit = event.queryStringParameters.limit;
+        }
+        
+        // Parse query parameters
+        //nextKey = parseNextKeyParameter(event)
+        //limit = parseLimitParameter(event) || 20
+
+        logger.info(`This is nextKey: ${nextKey}`)
+        logger.info(`This is limit: ${limit}`)
       } catch (e) {
         logger.error('Failed to parse query parameters: ', e.message)
         return {
